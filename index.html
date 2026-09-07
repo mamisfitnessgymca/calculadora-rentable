@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora Rentable 🇻🇪</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="icon" type="image/png" href="icon-192.png">
+    <style>
+        :root {
+            --bg-color: #0f111a;
+            --card-bg: #1b1e2b;
+            --text-main: #ffffff;
+            --text-muted: #a0a5b1;
+            --primary: #00e5ff; /* Cyan accent */
+            --primary-gradient: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%);
+            --success: #00e676;
+            --danger: #ff4b4b;
+            --border: #2a2d3d;
+            --input-bg: #13151f;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px 10px;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 500px;
+            width: 100%;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .rates-header {
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .rates-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .rate-item {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 12px 8px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+        
+        .rate-item strong {
+            display: block;
+            color: var(--text-main);
+            font-size: 1.1rem;
+            margin-top: 4px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+        }
+
+        input[type="number"], input[type="text"], select {
+            width: 100%;
+            padding: 14px;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            font-size: 1rem;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(0, 229, 255, 0.2);
+        }
+
+        .input-group input {
+            flex: 2;
+        }
+
+        .input-group select {
+            flex: 1;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a0a5b1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 16px;
+            padding-right: 30px;
+        }
+        
+        .input-group select option {
+            background-color: var(--card-bg);
+            color: var(--text-main);
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(0, 210, 255, 0.3);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 210, 255, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+
+        button.outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid rgba(0, 229, 255, 0.5);
+            box-shadow: none;
+            margin-top: 15px;
+        }
+        
+        button.outline:hover {
+            background: rgba(0, 229, 255, 0.1);
+        }
+
+        .result-card {
+            display: none;
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            background: linear-gradient(180deg, rgba(27, 30, 43, 1) 0%, rgba(0, 230, 118, 0.05) 100%);
+        }
+
+        .result-card.show {
+            display: block;
+            animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .result-title {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: var(--success);
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .breakdown-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            font-size: 0.95rem;
+        }
+
+        .breakdown-table th {
+            color: var(--text-muted);
+            font-weight: 600;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+            text-align: left;
+        }
+
+        .breakdown-table td {
+            padding: 12px 8px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        .savings {
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            padding: 15px;
+            background: rgba(0, 230, 118, 0.1);
+            border-radius: 12px;
+            color: var(--success);
+            border: 1px solid rgba(0, 230, 118, 0.2);
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .history-table th {
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        .history-table td {
+            padding: 12px 4px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.02);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1>💱 Calculadora Rentable</h1>
+        
+        <div class="rates-header">
+            <div class="rates-grid">
+                <div class="rate-item">💵 Binance: <strong id="val-binance">...</strong> Bs/$</div>
+                <div class="rate-item">🏦 BCV: <strong id="val-bcv">...</strong> Bs/$</div>
+                <div class="rate-item">💶 BCV EUR: <strong id="val-eur">...</strong> Bs/€</div>
+                <div class="rate-item">📊 Brecha: <strong id="val-brecha">...</strong>%</div>
+            </div>
+            <div style="font-size: 0.8rem; opacity: 0.8;" id="val-fecha">Actualizando...</div>
+            <button class="outline" style="padding: 5px; font-size: 0.8rem; width: auto;" onclick="fetchRates()">🔄 Actualizar tasas</button>
+        </div>
+
+        <div class="form-group">
+            <label>📦 Nombre del producto (opcional):</label>
+            <input type="text" id="producto" placeholder="Ej: Zapatos">
+        </div>
+
+        <div class="form-group">
+            <label>── OPCIÓN 1: Precio "al BCV" (pagas en Bs) ──</label>
+            <div class="input-group">
+                <input type="text" id="precio1" placeholder="Monto" inputmode="decimal" oninput="formatInputForm(this)">
+                <select id="moneda1">
+                    <option value="Bs">Bs</option>
+                    <option value="USD" selected>$</option>
+                    <option value="EUR">€</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>── OPCIÓN 2: Precio "en Divisas" (cash) ──</label>
+            <div class="input-group">
+                <input type="text" id="precio2" placeholder="Monto" inputmode="decimal" oninput="formatInputForm(this)">
+                <select id="moneda2">
+                    <option value="USD" selected>$</option>
+                    <option value="EUR">€</option>
+                </select>
+            </div>
+        </div>
+
+        <button onclick="comparar()">🔍 ¿CUÁL ME CONVIENE?</button>
+    </div>
+
+    <div class="card result-card" id="resultadoCard">
+        <div class="result-title" id="resultadoTitulo">🏆 RESULTADO</div>
+        
+        <table class="breakdown-table">
+            <thead>
+                <tr>
+                    <th>Al BCV (Pagas Bs)</th>
+                    <th>En Divisas (Costo Real)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td id="res-op1-desc">...</td>
+                    <td id="res-op2-desc">...</td>
+                </tr>
+                <tr>
+                    <td id="res-op1-bs">...</td>
+                    <td id="res-op2-bs">...</td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="savings" id="resultadoAhorro">💰 AHORRAS: ...</div>
+    </div>
+
+    <div class="card">
+        <h3 style="margin-top:0">📋 Historial</h3>
+        <table class="history-table" id="tablaHistorial">
+            <thead>
+                <tr>
+                    <th>Prod.</th>
+                    <th>BCV</th>
+                    <th>Divisa</th>
+                    <th>Mejor</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic rows -->
+            </tbody>
+        </table>
+        <button class="outline" onclick="limpiarHistorial()">🗑️ Limpiar historial</button>
+    </div>
+</div>
+
+<script>
+    let tasas = {
+        binance: 0,
+        bcv_usd: 0,
+        bcv_eur: 0
+    };
+
+    const formatearBs = (num) => new Intl.NumberFormat('es-VE', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(num);
+    const formatearMonto = (num) => new Intl.NumberFormat('es-VE', { maximumFractionDigits: 2 }).format(num);
+
+    function formatInputForm(input) {
+        let value = input.value.replace(/[^0-9,]/g, '');
+        const parts = value.split(',');
+        if (parts.length > 2) {
+            value = parts[0] + ',' + parts.slice(1).join('');
+        }
+        if (value === '') {
+            input.value = '';
+            return;
+        }
+        let [entero, decimal] = value.split(',');
+        entero = entero.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+        if (decimal !== undefined) {
+            input.value = entero + ',' + decimal;
+        } else {
+            input.value = entero;
+        }
+    }
+
+    function parseFormattedNumber(val) {
+        if (!val) return NaN;
+        return parseFloat(val.replace(/\./g, '').replace(/,/g, '.'));
+    }
+
+    async function fetchRates() {
+        document.getElementById('val-binance').innerText = '...';
+        document.getElementById('val-bcv').innerText = '...';
+        document.getElementById('val-eur').innerText = '...';
+        document.getElementById('val-brecha').innerText = '...';
+        
+        try {
+            // Fetch usdt.com.ve for Binance and BCV USD
+            const resUsdt = await fetch('https://www.usdt.com.ve/api/v1/rates/current');
+            const dataUsdt = await resUsdt.json();
+            
+            tasas.binance = dataUsdt.data.binance.buy_rate;
+            tasas.bcv_usd = dataUsdt.data.bcv.rate;
+            
+            document.getElementById('val-binance').innerText = formatearBs(tasas.binance);
+            document.getElementById('val-bcv').innerText = formatearBs(tasas.bcv_usd);
+            document.getElementById('val-brecha').innerText = formatearBs(dataUsdt.data.brecha_pct);
+            
+            // Fetch EUR
+            try {
+                const resEur = await fetch('https://ve.dolarapi.com/v1/euros/oficial');
+                const dataEur = await resEur.json();
+                tasas.bcv_eur = dataEur.promedio;
+                document.getElementById('val-eur').innerText = formatearBs(tasas.bcv_eur);
+            } catch (e) {
+                console.error("Error fetching EUR", e);
+                document.getElementById('val-eur').innerText = "Error";
+            }
+            
+            const d = new Date(dataUsdt.data.captured_at || Date.now());
+            document.getElementById('val-fecha').innerText = `Actualizado: ${d.toLocaleString('es-VE')}`;
+            
+        } catch (error) {
+            console.error("Error fetching rates", error);
+            alert("No se pudieron cargar las tasas automáticamente. Verifica tu conexión.");
+        }
+    }
+
+    function calcularCostoBsOpcion1(precio, moneda) {
+        if (moneda === 'Bs') return precio;
+        if (moneda === 'USD') return precio * tasas.bcv_usd;
+        if (moneda === 'EUR') return precio * tasas.bcv_eur;
+        return 0;
+    }
+
+    function calcularCostoBsOpcion2(precio, moneda) {
+        // Costo REAL en Bs de conseguir esas divisas en Binance
+        if (moneda === 'USD') return precio * tasas.binance;
+        if (moneda === 'EUR') {
+             // Estimación: convertir EUR a USD por paridad oficial, luego a Bs en Binance
+             const usdEquiv = precio * (tasas.bcv_eur / tasas.bcv_usd);
+             return usdEquiv * tasas.binance;
+        }
+        return 0;
+    }
+
+    function comparar() {
+        if (!tasas.binance || !tasas.bcv_usd) {
+            alert("Por favor espera a que carguen las tasas o actualízalas.");
+            return;
+        }
+
+        const precio1 = parseFormattedNumber(document.getElementById('precio1').value);
+        const moneda1 = document.getElementById('moneda1').value;
+        const precio2 = parseFormattedNumber(document.getElementById('precio2').value);
+        const moneda2 = document.getElementById('moneda2').value;
+        const producto = document.getElementById('producto').value || 'Item';
+
+        if (isNaN(precio1) || isNaN(precio2) || precio1 < 0 || precio2 < 0) {
+            alert("Por favor ingresa valores válidos en ambos precios.");
+            return;
+        }
+
+        const costoBs1 = calcularCostoBsOpcion1(precio1, moneda1);
+        const costoBs2 = calcularCostoBsOpcion2(precio2, moneda2);
+
+        const card = document.getElementById('resultadoCard');
+        const titulo = document.getElementById('resultadoTitulo');
+        
+        let ganador = "";
+        let ahorroBs = 0;
+
+        if (costoBs1 < costoBs2) {
+            ganador = "AL BCV (Pagar en Bs)";
+            ahorroBs = costoBs2 - costoBs1;
+            titulo.innerHTML = `🏆 TE CONVIENE PAGAR AL BCV`;
+            titulo.style.color = 'var(--primary)';
+            card.style.borderColor = 'var(--primary)';
+        } else {
+            ganador = "EN DIVISAS (Cash)";
+            ahorroBs = costoBs1 - costoBs2;
+            titulo.innerHTML = `🏆 TE CONVIENE PAGAR EN DIVISAS`;
+            titulo.style.color = 'var(--success)';
+            card.style.borderColor = 'var(--success)';
+        }
+
+        const ahorroUsd = ahorroBs / tasas.binance;
+
+        // Desglose
+        const sim1 = moneda1 === 'USD' ? '$' : (moneda1 === 'EUR' ? '€' : 'Bs');
+        const sim2 = moneda2 === 'USD' ? '$' : '€';
+        
+        document.getElementById('res-op1-desc').innerText = `${formatearMonto(precio1)} ${sim1} al BCV`;
+        document.getElementById('res-op1-bs').innerText = `= ${formatearBs(costoBs1)} Bs`;
+        
+        document.getElementById('res-op2-desc').innerText = `${formatearMonto(precio2)} ${sim2} cash`;
+        document.getElementById('res-op2-bs').innerHTML = `= ${formatearBs(costoBs2)} Bs<br><small style="opacity:0.7">(*costo Binance)</small>`;
+        
+        document.getElementById('resultadoAhorro').innerText = `💰 AHORRAS: ${formatearBs(ahorroBs)} Bs (≈ $${formatearBs(ahorroUsd)})`;
+        
+        card.classList.remove('show');
+        void card.offsetWidth; // trigger reflow
+        card.classList.add('show');
+
+        guardarHistorial(producto, `${formatearMonto(precio1)} ${sim1}`, `${formatearMonto(precio2)} ${sim2}`, ganador.includes('BCV') ? 'BCV' : 'Divisa', ahorroUsd);
+    }
+
+    function guardarHistorial(prod, op1, op2, ganador, ahorro) {
+        let hist = JSON.parse(localStorage.getItem('rentable_hist') || '[]');
+        hist.unshift({ prod, op1, op2, ganador, ahorro });
+        if (hist.length > 5) hist.pop(); // Keep last 5
+        localStorage.setItem('rentable_hist', JSON.stringify(hist));
+        cargarHistorial();
+    }
+
+    function cargarHistorial() {
+        const tbody = document.querySelector('#tablaHistorial tbody');
+        tbody.innerHTML = '';
+        let hist = JSON.parse(localStorage.getItem('rentable_hist') || '[]');
+        
+        if (hist.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="4" style="text-align:center; opacity:0.5">Sin comparaciones recientes</td></tr>';
+            return;
+        }
+
+        hist.forEach(h => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td>${h.prod}</td>
+                <td>${h.op1}</td>
+                <td>${h.op2}</td>
+                <td><strong>${h.ganador} ✅</strong><br><small>ahorro: $${formatearBs(h.ahorro)}</small></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function limpiarHistorial() {
+        localStorage.removeItem('rentable_hist');
+        cargarHistorial();
+    }
+
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('sw.js').then(reg => {
+                console.log('SW registered:', reg);
+            }).catch(err => {
+                console.log('SW registration failed:', err);
+            });
+        });
+    }
+
+    // Init
+    fetchRates();
+    cargarHistorial();
+
+</script>
+</body>
+</html>

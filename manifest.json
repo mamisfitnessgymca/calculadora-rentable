@@ -1,0 +1,21 @@
+{
+  "name": "Calculadora Rentable Venezuela",
+  "short_name": "Rentable 🇻🇪",
+  "description": "Compara si es mejor pagar en Bolívares o en Divisas considerando la tasa Binance y BCV.",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#1a1a2e",
+  "theme_color": "#0033a0",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
